@@ -826,12 +826,15 @@
             overflow: hidden
         }
 
+        footer .photo-wide {
+            padding: 0 1.4rem
+        }
+
         footer .photo-wide .ph-box {
-            aspect-ratio: 16/10;
-            max-width: 100%;
-            border-left: none;
-            border-right: none;
-            border-top: none
+            aspect-ratio: 2/3;
+            max-width: 430px;
+            margin: 0 auto;
+            border: 1px solid rgba(255, 255, 255, .14)
         }
 
         footer .close-band {
@@ -924,6 +927,91 @@
         @keyframes spin {
             to {
                 transform: rotate(360deg)
+            }
+        }
+
+        .music-btn {
+            position: fixed;
+            left: 18px;
+            bottom: 18px;
+            z-index: 400;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, .4);
+            background: rgba(0, 0, 0, .5);
+            backdrop-filter: blur(6px);
+            color: #fff;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: transform .3s, box-shadow .3s
+        }
+
+        .music-btn:hover {
+            transform: scale(1.08)
+        }
+
+        .music-btn.playing {
+            box-shadow: 0 0 26px rgba(255, 255, 255, .55)
+        }
+
+        .music-btn .bars {
+            display: flex;
+            gap: 3px;
+            align-items: flex-end;
+            height: 22px
+        }
+
+        .music-btn .bars i {
+            width: 3px;
+            display: block;
+            background: #fff;
+            border-radius: 1px;
+            height: 8px
+        }
+
+        .music-btn .bars i:nth-child(1) {
+            height: 10px
+        }
+
+        .music-btn .bars i:nth-child(2) {
+            height: 18px
+        }
+
+        .music-btn .bars i:nth-child(3) {
+            height: 7px
+        }
+
+        .music-btn .bars i:nth-child(4) {
+            height: 14px
+        }
+
+        .music-btn.playing .bars i {
+            animation: eq .9s ease-in-out infinite
+        }
+
+        .music-btn.playing .bars i:nth-child(2) {
+            animation-delay: .2s
+        }
+
+        .music-btn.playing .bars i:nth-child(3) {
+            animation-delay: .4s
+        }
+
+        .music-btn.playing .bars i:nth-child(4) {
+            animation-delay: .1s
+        }
+
+        @keyframes eq {
+
+            0%,
+            100% {
+                height: 6px
+            }
+
+            50% {
+                height: 22px
             }
         }
 
@@ -1028,7 +1116,8 @@
             .bday,
             .beam,
             .where .pin,
-            .party-btn .ic {
+            .party-btn .ic,
+            .music-btn .bars i {
                 animation: none
             }
 
@@ -1043,6 +1132,7 @@
     <div id="bg-layer"></div>
     <canvas id="fx"></canvas>
     <div id="flash"></div>
+    <audio id="song" src="public/musica.mp3" loop preload="auto"></audio>
 
     <nav id="nav">
         <a href="#inicio">Inicio</a>
@@ -1322,12 +1412,7 @@
 
         <div class="hero-inner">
             <div class="hero-title">
-                <div class="album reveal">
-                    <div class="ph-box">
-                        <div class="ph-in"><span>Lady&nbsp;Gaga</span></div>
-                    </div>
-                    <div class="cap">♫ Tema de la noche</div>
-                </div>
+                
                 <div class="its-my reveal d1">it's my</div>
                 <div class="bday reveal d1">Birthday!</div>
                 <div class="name-c reveal d2">Catalina</div>
@@ -1664,6 +1749,8 @@
         </div>
     </footer>
 
+    <button class="music-btn" id="music" aria-label="Música"><span
+            class="bars"><i></i><i></i><i></i><i></i></span></button>
     <button class="party-btn" id="party" aria-label="Modo fiesta"><span class="ic">✦</span></button>
     <div class="toast" id="toast">Alias copiado ✓</div>
 
@@ -1757,6 +1844,22 @@
 
         /* ---- flash on load ---- */
         addEventListener('load', () => { const f = $('flash'); if (f) setTimeout(() => f.classList.add('gone'), 60); });
+
+        /* ---- música ---- */
+        const song = $('song'), musicBtn = $('music'); let musicOn = false;
+        function setMusic(on) {
+            if (on) { song.play().then(() => { musicOn = true; musicBtn.classList.add('playing'); }).catch(() => { musicOn = false; musicBtn.classList.remove('playing'); }); }
+            else { song.pause(); musicOn = false; musicBtn.classList.remove('playing'); }
+        }
+        musicBtn.addEventListener('click', () => setMusic(!musicOn));
+        addEventListener('load', () => {
+            song.volume = .6;
+            song.play().then(() => { musicOn = true; musicBtn.classList.add('playing'); }).catch(() => {
+                const start = e => { if (e && e.target && e.target.closest && e.target.closest('#music')) return; if (!musicOn) setMusic(true); clean(); };
+                const clean = () => ['pointerdown', 'touchstart', 'keydown', 'scroll'].forEach(ev => removeEventListener(ev, start));
+                ['pointerdown', 'touchstart', 'keydown', 'scroll'].forEach(ev => addEventListener(ev, start, { passive: true }));
+            });
+        });
 
         /* ---- copy + rsvp ---- */
         function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1900); }
