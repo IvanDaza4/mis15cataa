@@ -400,7 +400,7 @@ window.copyAlias=()=>{navigator.clipboard?navigator.clipboard.writeText(ALIAS).t
 $('f-send').addEventListener('click',()=>{
   const name=$('f-name').value.trim()||'(sin nombre)',food=$('f-food').value.trim()||'—',song=$('f-song').value.trim()||'—';
   if(!RM)spark(innerWidth/2,innerHeight*.7,30,5);
-  const text='¡Hola Catalina! Confirmo mi asistencia a tus 15 🎉%0A'+'Nombre y Apellido: '+name+'%0A'+'Restricción alimentaria: '+food+'%0A'+'Canción que no puede faltar: '+song;
+  const text='¡Hola Cataaa! Confirmo mi asistencia a tus 15 🎉%0A'+'Nombre y Apellido: '+name+'%0A'+'Restricción alimentaria: '+food+'%0A'+'Canción que no puede faltar: '+song;
   setTimeout(()=>window.open('https://wa.me/'+WHATSAPP+'?text='+text,'_blank'),250);
 });
 </script>
